@@ -31,7 +31,9 @@ RUN tar -C /usr/local/bin/ -xvzf /usr/local/bin/docker-credential-acr-linux-amd6
 COPY . .
 RUN make GOARCH=${GOARCH}
 
-FROM scratch
+# FROM scratch
+FROM alpine:3.7
+RUN apk add --no-cache git
 COPY --from=0 /go/src/github.com/GoogleContainerTools/kaniko/out/executor /kaniko/executor
 COPY --from=0 /usr/local/bin/docker-credential-gcr /kaniko/docker-credential-gcr
 COPY --from=0 /go/src/github.com/awslabs/amazon-ecr-credential-helper/bin/linux-amd64/docker-credential-ecr-login /kaniko/docker-credential-ecr-login
@@ -47,3 +49,5 @@ ENV DOCKER_CREDENTIAL_GCR_CONFIG /kaniko/.config/gcloud/docker_credential_gcr_co
 WORKDIR /workspace
 RUN ["docker-credential-gcr", "config", "--token-source=env"]
 ENTRYPOINT ["/kaniko/executor"]
+
+
